@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+This is Admin page
+<form th:method="GET" th:action="@{/users/user}">
+    <input type="submit" value="User info">
+</form>
+<br/>
+<form th:method="GET" th:action="@{/admins/users}">
+    <input type="submit" value="Users">
+</form>
+<br/>
+<form th:method="POST" th:action="@{/logout}">
+    <input type="submit" value="Logout">
+</form>
+</body>
+</html>

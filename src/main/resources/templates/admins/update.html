@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form th:action="@{/admins/update}" th:object="${user}" th:method="POST">
+    <label>
+        <input name="id" th:field="*{id}" th:value="${user.id}" type="hidden">
+    </label>
+    <label for="username">Username</label>
+    <input type="text" id="username" th:field="*{username}" th:value="${user.username}" required>
+    <div style="color: red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Name error</div>
+    </br>
+    <label for="age">Age</label>
+    <input type="text" id="age" th:field="*{age}" th:value="${user.age}" required>
+    <div style="color: red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">Name error</div>
+    </br>
+    <p>
+        <label>Roles:
+            <input type="checkbox" name="roles"
+                   th:each="role : ${roles}"
+                   th:text="${role.name}"
+                   th:value="${role.id}"
+                   th:field="*{roles}"
+            />
+        </label>
+    </p>
+    <br/>
+    <button type="submit">update user</button>
+</form>
+</body>
+</html>
