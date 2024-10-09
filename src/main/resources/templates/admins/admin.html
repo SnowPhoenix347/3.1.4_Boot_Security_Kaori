@@ -2,20 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Admin Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        form {
+            margin: 10px 0;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-This is Admin page
-<form th:method="GET" th:action="@{/users/user}">
-    <input type="submit" value="User info">
+
+<h2>This is Admin Page</h2>
+
+<form th:method="GET" th:action="@{/user}">
+    <input type="submit" value="User Info">
 </form>
-<br/>
+
 <form th:method="GET" th:action="@{/admins/users}">
     <input type="submit" value="Users">
 </form>
-<br/>
+
 <form th:method="POST" th:action="@{/logout}">
     <input type="submit" value="Logout">
 </form>
+
 </body>
 </html>
