@@ -8,14 +8,13 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
-import ru.kata.spring.boot_security.demo.services.UserService;
-import ru.kata.spring.boot_security.demo.services.UsersDetailsService;
+import ru.kata.spring.boot_security.demo.services.UsersService;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admins")
 public class AdminController {
-    private final UsersDetailsService usersDetailsService;
+    private final UsersService usersService;
     private final RoleService roleService;
 
     @GetMapping
@@ -25,7 +24,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public String getUsers(Model model){
-        model.addAttribute("users", usersDetailsService.getAllUsers());
+        model.addAttribute("users", usersService.getAllUsers());
         return "admins/users";
     }
 
@@ -44,13 +43,14 @@ public class AdminController {
             model.addAttribute("roles", roleService.findAll());
             return "admins/create";
         }
-        usersDetailsService.save(user);
+        usersService.save(user);
         return "redirect:/admins/users";
     }
 
     @GetMapping("/update")
     public String update(@RequestParam(name = "id") Long id, Model model){
-        User user = usersDetailsService.getUserById(id);
+        User user = usersService.getUserById(id);
+        user.setPassword(null);
         model.addAttribute("user", user);
         model.addAttribute("roles", roleService.findAll());
         return "admins/update";
@@ -64,13 +64,13 @@ public class AdminController {
             model.addAttribute("roles", roleService.findAll());
             return "admins/update";
         }
-        usersDetailsService.update(user, user.getId());
+        usersService.update(user, user.getId());
         return "redirect:/admins/users";
     }
 
     @PostMapping("/delete")
     public String delete(@RequestParam(name = "id") Long id){
-        usersDetailsService.delete(id);
+        usersService.delete(id);
         return "redirect:/admins/users";
     }
 }

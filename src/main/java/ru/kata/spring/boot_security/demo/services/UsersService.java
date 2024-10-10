@@ -11,11 +11,12 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UsersDetailsService implements UserDetailsService {
+public class UsersService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     @Override
@@ -49,6 +50,11 @@ public class UsersDetailsService implements UserDetailsService {
     @Transactional
     public void update(User user, Long id) {
         user.setId(id);
+        if (!(Objects.equals(user.getPassword(), ""))) {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        } else {
+            user.setPassword(getUserById(id).getPassword());
+        }
         userRepository.save(user);
     }
 
