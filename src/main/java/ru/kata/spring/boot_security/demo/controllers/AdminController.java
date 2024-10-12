@@ -2,6 +2,7 @@ package ru.kata.spring.boot_security.demo.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -72,5 +73,11 @@ public class AdminController {
     public String delete(@RequestParam(name = "id") Long id){
         usersService.delete(id);
         return "redirect:/admins/users";
+    }
+
+    @GetMapping("/users/update/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id){
+        User user = usersService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 }
