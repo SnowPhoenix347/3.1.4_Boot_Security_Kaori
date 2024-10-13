@@ -1,0 +1,54 @@
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Edit user</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/admins/update}" th:method="POST">
+                    <div class="text-center">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <label for="user-id" class="form-label fw-bold">ID</label>
+                                <input type="text" class="form-control text-muted" id="user-id" name="id" readonly>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <label for="modal-username" class="form-label fw-bold">Username</label>
+                                <input type="text" class="form-control mb-4" id="modal-username" name="username"
+                                       required>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <label for="modal-age" class="form-label fw-bold">Age</label>
+                                <input type="text" class="form-control mb-4" id="modal-age" name="age" required>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <label for="modal-password" class="form-label fw-bold">Password</label>
+                                <input type="text" class="form-control mb-4" id="modal-password" name="password">
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 form-group fw-bold mb-4">
+                                <label for="rolesSelect">Roles:</label>
+                                <select class="form-control" size="2" id="rolesSelect" name="roles" multiple>
+                                    <option th:each="role : ${roles}" th:value="${role.id}"
+                                            th:text="${role.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
