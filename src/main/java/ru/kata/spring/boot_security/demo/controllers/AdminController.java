@@ -63,7 +63,7 @@ public class AdminController {
         if(bindingResult.hasErrors()){
             model.addAttribute("user", user);
             model.addAttribute("roles", roleService.findAll());
-            return "admins/update";
+            return "redirect:/admins/users";
         }
         usersService.update(user, user.getId());
         return "redirect:/admins/users";

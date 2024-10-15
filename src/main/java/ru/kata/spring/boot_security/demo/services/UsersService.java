@@ -69,4 +69,8 @@ public class UsersService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
     }
+
+    public boolean isUsernameUnique(String username) {
+        return userRepository.findByUsername(username) == null;
+    }
 }

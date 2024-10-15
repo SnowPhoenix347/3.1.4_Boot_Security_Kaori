@@ -1,16 +1,16 @@
 package ru.kata.spring.boot_security.demo.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.kata.spring.boot_security.demo.models.UsersValidation.UniqueUsername;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -25,6 +25,7 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(unique = true)
+    @UniqueUsername
     private String username;
     @Column
     private String password;
@@ -37,7 +38,7 @@ public class User implements UserDetails {
                     name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
