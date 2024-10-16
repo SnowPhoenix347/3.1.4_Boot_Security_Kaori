@@ -39,6 +39,9 @@ public class AdminController {
     @PostMapping("/create")
     public String create(@ModelAttribute("user")
                              @Valid User user, BindingResult bindingResult, Model model) {
+        if (!usersService.isUsernameUnique(user.getUsername(), user.getId())) {
+            bindingResult.rejectValue("username", "error.user", "Username already exists");
+        }
         if(bindingResult.hasErrors()){
             model.addAttribute("user", user);
             model.addAttribute("roles", roleService.findAll());
@@ -60,6 +63,9 @@ public class AdminController {
     @PostMapping("/update")
     public String update(@ModelAttribute("user")
                              @Valid User user, BindingResult bindingResult, Model model) {
+        if (!usersService.isUsernameUnique(user.getUsername(), user.getId())) {
+            bindingResult.rejectValue("username", "error.user", "Username already exists");
+        }
         if(bindingResult.hasErrors()){
             model.addAttribute("user", user);
             model.addAttribute("roles", roleService.findAll());

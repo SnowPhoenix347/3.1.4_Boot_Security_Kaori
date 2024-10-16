@@ -70,7 +70,11 @@ public class UsersService implements UserDetailsService {
         }
     }
 
-    public boolean isUsernameUnique(String username) {
-        return userRepository.findByUsername(username) == null;
+    public boolean isUsernameUnique(String username, Long id) {
+        User existingUser = userRepository.findByUsername(username);
+        if (existingUser == null) {
+            return true;
+        }
+        return existingUser.getId().equals(id);
     }
 }
