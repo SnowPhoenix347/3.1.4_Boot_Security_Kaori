@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.kata.spring.boot_security.demo.models.UsersValidation.UniqueUsername;
 
 import java.util.Collection;
 import java.util.Set;
@@ -25,7 +24,6 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(unique = true)
-    @UniqueUsername
     private String username;
     @Column
     private String password;
