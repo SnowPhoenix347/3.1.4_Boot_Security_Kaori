@@ -67,9 +67,15 @@ public class RestAdminController {
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/update/{id}")
-    public ResponseEntity<HttpStatus> update(@PathVariable("id") Long id, @RequestBody @Valid User user) {
-
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<HttpStatus> update(@PathVariable("id") Long id, @RequestBody @Valid User user, BindingResult bindingResult) {
+        if (!usersService.isUsernameUnique(user.getUsername(), id)) {
+            bindingResult.rejectValue("username", "error.user", "Username already exists");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(HttpStatus.CONFLICT);
+        }
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(HttpStatus.BAD_REQUEST);
+        }
         usersService.update(user, id);
         return ResponseEntity.ok(HttpStatus.OK);
     }

@@ -3,7 +3,9 @@ package ru.kata.spring.boot_security.demo.configs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import ru.kata.spring.boot_security.demo.services.UsersService;
 
 @Configuration
 @EnableWebSecurity
@@ -23,12 +26,12 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/css/**").permitAll()
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/app/**").hasRole("ADMIN")
-                        .requestMatchers("/app/user").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/app/css/**").permitAll()
+                        .requestMatchers("/login", "/logout").permitAll()
+                        .requestMatchers("/api/user").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/api/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form ->form
@@ -39,8 +42,17 @@ public class WebSecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/"))
-                .csrf(AbstractHttpConfigurer::disable)
                 .build();
+    }
+
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http, UsersService usersService) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder
+                .userDetailsService(usersService) // Укажите ваш UserDetailsService
+                .passwordEncoder(getPasswordEncoder());
+        return authenticationManagerBuilder.build();
     }
 
     @Bean

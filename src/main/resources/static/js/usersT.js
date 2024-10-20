@@ -1,6 +1,25 @@
 const roleList = []
 $(async function () {
-    await getTableWithUsers()
+    const user = await userFetchService.getCurrentUser();
+    const userJson = await user.json();
+    const roleNames = userJson[0].roles.map(role => role.name);
+    let rowTitle = $('#rowTitle')
+    if (roleNames.includes('ADMIN')) {
+        await getTableWithUsers()
+        rowTitle.append(`<p class="h1">Admin panel</p>`)
+        console.log("admin")
+    } else {
+        await getTableWithUsers(userFetchService.getCurrentUser())
+        rowTitle.append(`<p class="h1">User panel</p>`)
+        console.log("user")
+        let buttonAdmin = $('#buttonAdmin');
+        buttonAdmin.removeClass('btn-primary active');
+        buttonAdmin.hide()
+        $('#navTabsAdmin').hide()
+        $('#buttonUser').addClass('btn-primary active');
+
+    }
+
     buttonsController();
 })
 
@@ -19,7 +38,7 @@ const userFetchService = {
         {method: 'DELETE', headers: userFetchService.head}),
     getUser: async (id) => await fetch(`/api/user/${id}`),
     updateUser: async (id, user) => await fetch(`/api/update/${id}`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -225,78 +244,46 @@ async function showUpdateModal(id) {
     let updateForm = $('#updateForm');
     let updateModal = $('#updateModal');
 
-    // Получаем данные пользователя
     let response = await userFetchService.getUser(id);
-    if (!response.ok) {
-        console.error('Failed to fetch user:', response.status, response.statusText);
-        return; // Остановите выполнение, если не удалось получить пользователя
-    }
     let user = await response.json();
-    console.log('Fetched user:', user); // Отладка: выводим полученного пользователя
-
-    // Проверка наличия данных пользователя
-    if (!user || !user.id) {
-        console.error('User data is invalid:', user);
-        return; // Остановите выполнение, если данные пользователя неверные
-    }
-
-    // Получаем все роли
     let rolesResponse = await userFetchService.getRoles();
-    if (!rolesResponse.ok) {
-        console.error('Failed to fetch roles:', rolesResponse.status, rolesResponse.statusText);
-        return; // Остановите выполнение, если не удалось получить роли
-    }
     let allRoles = await rolesResponse.json();
 
-    // Очищаем поле выбора ролей
     let rolesSelect = $('#updateRoles');
     rolesSelect.empty();
-
-    // Заполняем список ролей и выделяем активные у пользователя
     allRoles.forEach(role => {
-        let selected = user.roles && user.roles.some(userRole => userRole.id === role.id);
-        let option = `<option value="${role.id}" ${selected ? 'selected' : ''}>
-                        ${role.name}
-                      </option>`;
+        let selected = user.roles.some(userRole => userRole.id === role.id);
+        let option = `<option value="${role.id}" ${selected ? 'selected' : ''}>${role.name}</option>`;
         rolesSelect.append(option);
     });
 
-    // Заполняем остальные поля формы
     $('#update-id').val(user.id);
     $('#update-username').val(user.username);
     $('#update-age').val(user.age);
-    $('#update-password').val(''); // Очищаем поле пароля
+    $('#update-password').val('');
 
-    // Показ модального окна
     updateModal.modal('show');
-    updateModal.modal({ backdrop: false });
 
-    // Обработчик отправки формы
     updateForm.off('submit').on('submit', async function (event) {
         event.preventDefault();
 
-        let userId = $('#update-id').val(); // Получаем ID перед отправкой
-        if (!userId) {
-            console.error('User ID is undefined or empty');
-            return; // Остановите выполнение, если ID отсутствует
-        }
-
-        let newPassword = $('#update-password').val();
+        let userId = $('#update-id').val();
         let updatedUser = JSON.stringify({
             username: $(`[name="username"]`, updateForm).val(),
             age: $(`[name="age"]`, updateForm).val(),
-            password: $(`[name="password"]`, updateForm).val(),
+            password: $(`[name="password"]`, updateForm).val() || null,  // Если пусто, передаем null
             roles: Array.from($('#updateRoles').find('option:selected')).map(opt => ({ id: opt.value }))
         });
-        console.log('Updating user with data:', updatedUser);
-        // Отправляем запрос на обновление
-        try {
-            await userFetchService.updateUser(userId, updatedUser);
+
+        let result = await userFetchService.updateUser(userId, updatedUser);
+        if (result.ok) {
+            await getTableWithUsers();
             updateModal.modal('hide');
-            await getTableWithUsers(); // Обновляем таблицу с пользователями
-        } catch (error) {
-            console.error('Error updating user:', error);
+        } else {
+            alert("Failed to update");
         }
-        updateForm.trigger('reset')
+        updateModal.modal('hide');
+        $('.modal-backdrop').remove();
+        updateForm.trigger('reset');
     });
 }
